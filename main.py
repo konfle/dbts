@@ -89,9 +89,6 @@ async def on_ready():
     guild = discord.utils.get(bot.guilds, name=GUILD)
     print(f"{bot.user.name} has connected to Discord {guild.name}!")
 
-    # Start the WebSocket connection
-    asyncio.ensure_future(connect_to_websocket())
-
 
 async def send_discord_message(rsi):
     """
@@ -359,15 +356,13 @@ async def main():
         None
     """
     print("Bot is starting...")
-    await bot.start(TOKEN)
+    bot_task = asyncio.create_task(bot.start(TOKEN))
     print("Bot has started.")
+    print("Starting WebSocket...")
+    websocket_task = asyncio.create_task(connect_to_websocket())
+    print("WebSocket has started.")
+    await asyncio.gather(bot_task, websocket_task)
 
 if __name__ == "__main__":
-    # Print a message indicating the start of bot and WebSocket initialization
     print("Starting bot and WebSocket...")
-
-    # Schedule the execution of the main asynchronous function `main` using asyncio
-    asyncio.ensure_future(main())
-
-    # Run the event loop indefinitely to keep the program running
-    asyncio.get_event_loop().run_forever()
+    asyncio.run(main())
