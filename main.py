@@ -5,7 +5,8 @@ import asyncio
 import logging
 from discord.ext import commands
 from dotenv import load_dotenv
-from pybit.unified_trading import WebSocket
+from pybit.unified_trading import WebSocket, HTTP
+from datetime import datetime
 
 # Configuration of logging
 logging.basicConfig(
@@ -32,11 +33,36 @@ intents.message_content = True  # Ensure this intent is enabled for command hand
 # Create a new bot instance with the specified intents
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# List to store closing prices
-closes = [131.52, 131.56, 131.57, 131.58, 131.56,
-          131.42, 131.31, 131.27, 131.28, 131.28,
-          131.28, 131.17, 131.19, 131.45]
+closes = []
 test_mode = False
+
+
+# Function to get historical data
+def get_historical_data():
+    """
+    Fetches historical candlestick data for the given symbol and interval
+    and populates the 'closes' list with closing prices.
+
+    This function uses the pybit HTTP client to retrieve candlestick data.
+    """
+    session = HTTP(testnet=True)
+    end_time = int(datetime.now().timestamp() * 1000)  # current time in milliseconds
+    start_time = end_time - (RSI_PERIOD * INTERVAL * 60 * 1000)  # start time in milliseconds
+
+    response = session.get_kline(
+        category="inverse",
+        symbol=SYMBOL,
+        interval=INTERVAL,
+        start=start_time,
+        end=end_time,
+    )
+
+    if response["retCode"] == 0:
+        logger.info("Successfully fetched historical data.")
+        for entry in response["result"]["list"]:
+            closes.append(float(entry[4]))  # Append the close price to closes
+    else:
+        logger.error(f"Error fetching historical data: {response['retMsg']}")
 
 
 # Function for calculating RSI
@@ -360,6 +386,8 @@ async def main():
     Returns:
         None
     """
+    logger.info("Fetching historical data...")
+    get_historical_data()
     logger.info("Bot is starting...")
     bot_task = asyncio.create_task(bot.start(TOKEN))
     logger.info("Bot has started.")
