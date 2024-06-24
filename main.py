@@ -110,9 +110,9 @@ async def send_discord_message(rsi):
     print(f"Sending message to channel: {channel}")  # Debugging line
     if channel:
         if rsi > 70:
-            await channel.send(f"RSI is over 70 - it's SELL time!: {rsi}")
+            await channel.send(f"RSI is over 70 - it's SELL time! RSI value: {rsi:.2f}")
         elif rsi < 30:
-            await channel.send(f"RSI is lower 30 - it's BUY time!: {rsi}")
+            await channel.send(f"RSI is lower 30 - it's BUY time! RSI value: {rsi:.2f}")
     else:
         print("Channel not found.")
 
@@ -158,7 +158,7 @@ def handle_message(message):
         if len(closes) >= RSI_PERIOD:
             rsi = calculate_rsi(np.array(closes))
             latest_rsi = rsi[-1]
-            print(f"RSI: {latest_rsi}")
+            print(f"RSI: {latest_rsi:.2f}")
             # Use asyncio.run_coroutine_threadsafe to submit task to the event loop
             asyncio.run_coroutine_threadsafe(send_discord_message(latest_rsi), bot.loop)
 
