@@ -3,6 +3,8 @@ import discord
 import numpy as np
 import asyncio
 import logging
+import ta
+import pandas as pd
 from discord.ext import commands
 from dotenv import load_dotenv
 from pybit.unified_trading import WebSocket, HTTP
@@ -65,10 +67,10 @@ def get_historical_data():
         logger.error(f"Error fetching historical data: {response['retMsg']}")
 
 
-# Function for calculating RSI
+# Function for calculating RSI using Technical Analysis Library
 def calculate_rsi(closes, period=RSI_PERIOD):
     """
-    Calculate the Relative Strength Index (RSI) for a given series of closing prices.
+    Calculate the Relative Strength Index (RSI) for a given series of closing prices using Technical Analysis Library.
 
     Parameters:
     - closes (list or np.array): List or array of closing prices.
@@ -81,30 +83,9 @@ def calculate_rsi(closes, period=RSI_PERIOD):
     It oscillates between 0 and 100, with readings above 70 generally indicating overbought
     conditions and readings below 30 indicating oversold conditions.
     """
-    deltas = np.diff(closes)
-    seed = deltas[:period+1]
-    up = seed[seed >= 0].sum() / period
-    down = -seed[seed < 0].sum() / period
-    rs = up / down
-    rsi = np.zeros_like(closes)
-    rsi[:period] = 100. - 100. / (1. + rs)
-
-    for i in range(period, len(closes)):
-        delta = deltas[i-1]  # difference between current and previous closing price
-        if delta > 0:
-            upval = delta
-            downval = 0.
-        else:
-            upval = 0.
-            downval = -delta
-
-        up = (up * (period-1) + upval) / period
-        down = (down * (period-1) + downval) / period
-
-        rs = up / down
-        rsi[i] = 100. - 100. / (1. + rs)
-
-    return rsi
+    df = pd.DataFrame(closes, columns=["close"])
+    rsi = ta.momentum.RSIIndicator(df["close"], window=period).rsi()
+    return rsi.values
 
 
 @bot.event
