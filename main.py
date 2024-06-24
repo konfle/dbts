@@ -349,9 +349,6 @@ async def main():
     the bot using the provided bot token (`TOKEN`). Once the bot is successfully started,
     it prints a message confirming that the bot has started.
 
-    Parameters:
-        None
-
     Returns:
         None
     """
