@@ -2,9 +2,17 @@ import os
 import discord
 import numpy as np
 import asyncio
+import logging
 from discord.ext import commands
 from dotenv import load_dotenv
 from pybit.unified_trading import WebSocket
+
+# Configuration of logging
+logging.basicConfig(
+    level=logging.DEBUG,  # Setting the logging level to DEBUG
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -87,7 +95,7 @@ async def on_ready():
     to the WebSocket for receiving market data.
     """
     guild = discord.utils.get(bot.guilds, name=GUILD)
-    print(f"{bot.user.name} has connected to Discord {guild.name}!")
+    logger.info(f"{bot.user.name} has connected to Discord {guild.name}!")
 
 
 async def send_discord_message(rsi):
@@ -107,14 +115,14 @@ async def send_discord_message(rsi):
     """
     await bot.wait_until_ready()  # Ensure the bot is ready before getting the channel
     channel = bot.get_channel(CHANNEL)
-    print(f"Sending message to channel: {channel}")  # Debugging line
+    logger.debug(f"Sending message to channel: {channel}")
     if channel:
         if rsi > 70:
             await channel.send(f"RSI is over 70 - it's SELL time! RSI value: {rsi:.2f}")
         elif rsi < 30:
             await channel.send(f"RSI is lower 30 - it's BUY time! RSI value: {rsi:.2f}")
     else:
-        print("Channel not found.")
+        logger.warning("Channel not found.")
 
 
 def handle_message(message):
@@ -144,13 +152,13 @@ def handle_message(message):
         - Utilizes `asyncio.run_coroutine_threadsafe` to safely submit the `send_discord_message`
           coroutine to the event loop for sending Discord messages asynchronously.
     """
-    print(f"Received message: {message}")  # Debugging line
+    logger.debug(f"Received message: {message}")
     data = message["data"][0]
     if data['confirm']:  # If the candle is closed
         close_price = float(data["close"])
-        print(f"Closed candle price: {close_price}")  # Debugging line
+        logger.debug(f"Closed candle price: {close_price}")
         closes.append(close_price)
-        print(f"Current closes: {closes}")  # Debugging line
+        logger.debug(f"Current closes: {closes}")
 
         if len(closes) > RSI_PERIOD:
             closes.pop(0)  # Keep only the last RSI_PERIOD closes
@@ -158,7 +166,7 @@ def handle_message(message):
         if len(closes) >= RSI_PERIOD:
             rsi = calculate_rsi(np.array(closes))
             latest_rsi = rsi[-1]
-            print(f"RSI: {latest_rsi:.2f}")
+            logger.info(f"RSI calculated: {latest_rsi:.2f}")
             # Use asyncio.run_coroutine_threadsafe to submit task to the event loop
             asyncio.run_coroutine_threadsafe(send_discord_message(latest_rsi), bot.loop)
 
@@ -179,7 +187,7 @@ async def connect_to_websocket():
     - Uses global variables `INTERVAL` and `SYMBOL` to configure the WebSocket stream parameters.
     - Runs indefinitely to keep the WebSocket connection alive, sleeping for 1 second between iterations.
     """
-    print("Connecting to WebSocket...")
+    logger.info("Connecting to WebSocket...")
     ws = WebSocket(
         testnet=True,
         channel_type="linear",
@@ -352,14 +360,14 @@ async def main():
     Returns:
         None
     """
-    print("Bot is starting...")
+    logger.info("Bot is starting...")
     bot_task = asyncio.create_task(bot.start(TOKEN))
-    print("Bot has started.")
-    print("Starting WebSocket...")
+    logger.info("Bot has started.")
+    logger.info("Starting WebSocket...")
     websocket_task = asyncio.create_task(connect_to_websocket())
-    print("WebSocket has started.")
+    logger.info("WebSocket has started.")
     await asyncio.gather(bot_task, websocket_task)
 
 if __name__ == "__main__":
-    print("Starting bot and WebSocket...")
+    logger.info("Starting bot and WebSocket...")
     asyncio.run(main())
