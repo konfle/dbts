@@ -1,41 +1,97 @@
+[real-python-discord-bot]: https://realpython.com/how-to-make-a-discord-bot-python/
+[kline-stream-intervals]: https://bybit-exchange.github.io/docs/v5/websocket/public/kline
+[rsi]: https://www.investopedia.com/terms/r/rsi.asp
+[bybit]: https://www.bybit.com/en
+
 # DBTS Discord Bot
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)
+
+## Overview
+DBTS Discord Bot connects to a Discord server, retrieves market data from [Bybit][bybit] using WebSocket, calculates the 
+[Relative Strength Index (RSI)][rsi], and sends alerts to a specified Discord channel based on [RSI][rsi] thresholds.
 
 ## Requirements
-- Docker
+- Docker (development version was: Docker version 20.10.23, build 7155243)
+- Python 3.10.11 (recommended)
 
-## Setup
+## Docker Setup
 
 ### Clone the repository:
 ```sh
-git clone https://github.com/yourusername/dbts.git
+git clone https://github.com/konfle/dbts.git
 cd dbts
 ```
 
 ### Create a .env file in the root directory of the project and add the following environment variables:
+It may be helpful to visit this [resource][real-python-discord-bot] in case of any trouble to get the Discord 
+data needed for .env file
 ```
-DISCORD_TOKEN=<your_discord_bot_token>
-DISCORD_GUILD=<your_discord_guild_name>
-DISCORD_CHANNEL_ID=<your_discord_channel_id>
-SYMBOL=SOLUSDT
-INTERVAL=1
-RSI_PERIOD=14
+DISCORD_TOKEN=<your_discord_bot_token>  # Discord bot token required to authenticate the bot with Discord servers.
+DISCORD_GUILD=<your_discord_guild_name>  # Name of the Discord server (guild) where the bot will operate.
+DISCORD_CHANNEL_ID=<your_discord_channel_id>  # ID of the Discord channel where the bot will send messages.
+SYMBOL=SOLUSDT  # Symbol for the trading pair (e.g., SOL/USDT) for market data fetching.
+INTERVAL=1  # Interval in minutes for fetching k-line data from Bybit (e.g., 1 for 1-minute intervals).
+RSI_PERIOD=14  # Period in which to calculate the Relative Strength Index (RSI) based on closing prices.
+
 ```
 
 ### Build the Docker image:
-```
+```sh
 docker build -t rsi-discord-bot .
 ```
 
 ### Run the Docker container:
-```
+```sh
 docker run --env-file .env rsi-discord-bot
 ```
 
+## Local Setup
+To run this bot locally on your machine, follow these steps:
+
+### Install Python 3.10.11:
+Ensure you have Python 3.10.11 installed on your system. You can download it from
+[Python's official website](https://www.python.org/downloads/release/python-31011/).
+
+### Clone the repository:
+```sh
+git clone https://github.com/konfle/dbts.git
+cd dbts
+```
+
+### Install required libraries:
+Navigate to the project directory and install all required libraries using pip
+```sh
+pip install -r requirements.txt
+```
+
+### Run the bot:
+```sh
+python main.py
+```
+
 ## Usage
-The bot will connect to the specified Discord server and channel. It will fetch SOL/USDT k-line data from Bybit and 
-calculate the RSI. If the RSI is over 70 or below 30, it will send a message to the specified Discord channel.
+The bot connects to the specified Discord server and channel. It fetches SOL/USDT k-line data from Bybit and calculates
+the [RSI][rsi]. If the [RSI][rsi] is above 70 or below 30, it sends a message to the specified Discord channel.
+
+### Commands
+Most commands required that test mode is enabled.
+- !rsi: Displays the current Relative Strength Index ([RSI][rsi]) based on the historical closing prices.
+- !testmode True/False: Enables or disables test mode. In test mode, the bot simulates [RSI][rsi] alerts
+without real market data.
+- !testalert <rsi_value>: Sends a test [RSI][rsi] alert message to the Discord channel.
+- !teststatus: Displays the current status of test mode.
 
 ### Tips
 - Make sure you have access to the correct environment variables (`DISCORD_TOKEN`, `DISCORD_GUILD`, `DISCORD_CHANNEL_ID`).
 - Test the code locally before running in the Docker container.
 - Make sure you have the correct permissions for the bot on the Discord server.
+
+
+### Resources
+- [How to make a dicord bot with Python][real-python-discord-bot]
+- [K-line stream intervals][kline-stream-intervals]
+- [Relative Strength Index (RSI)][rsi]
+- [Bybit Documentation](https://bybit-exchange.github.io/docs/v5/intro)
+- [Pybit](https://github.com/bybit-exchange/pybit?tab=readme-ov-file#about)
