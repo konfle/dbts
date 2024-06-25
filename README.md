@@ -2,6 +2,12 @@
 [kline-stream-intervals]: https://bybit-exchange.github.io/docs/v5/websocket/public/kline
 [rsi]: https://www.investopedia.com/terms/r/rsi.asp
 [bybit]: https://www.bybit.com/en
+[pgi]: https://discord.com/developers/docs/topics/gateway#gateway-intents
+[pi]: https://discord.com/developers/docs/topics/gateway#presence-update
+[smi]: https://discord.com/developers/docs/topics/gateway#list-of-intents
+[mcp]: https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ
+[ddp]: https://discord.com/developers/docs/intro
+
 
 # DBTS Discord Bot
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
@@ -34,7 +40,6 @@ DISCORD_CHANNEL_ID=<your_discord_channel_id>  # ID of the Discord channel where 
 SYMBOL=SOLUSDT  # Symbol for the trading pair (e.g., SOL/USDT) for market data fetching.
 INTERVAL=1  # Interval in minutes for fetching k-line data from Bybit (e.g., 1 for 1-minute intervals).
 RSI_PERIOD=14  # Period in which to calculate the Relative Strength Index (RSI) based on closing prices.
-
 ```
 
 ### Build the Docker image:
@@ -87,11 +92,24 @@ without real market data.
 - Make sure you have access to the correct environment variables (`DISCORD_TOKEN`, `DISCORD_GUILD`, `DISCORD_CHANNEL_ID`).
 - Test the code locally before running in the Docker container.
 - Make sure you have the correct permissions for the bot on the Discord server.
+- Make sure that bot has [Privileged Gateway Intents][pgi] ([PRESENCE INTENT][pi], 
+[SERVER MEMBERS INTENT][smi], [MESSAGE CONTENT INTENT][mcp]) enabled on your [Discord Developers Platform][ddp]
 
+### Troubleshooting
+
+- RuntimeError: Event loop is closed
+
+    Check bot [Privileged Gateway Intents][pgi] on your [Discord Developers Platform][ddp] are enabled.
+
+
+- AttributeError: 'NoneType' object has no attribute 'send'
+
+    Check bot [Privileged Gateway Intents][pgi] on your [Discord Developers Platform][ddp] are enabled.
 
 ### Resources
 - [How to make a dicord bot with Python][real-python-discord-bot]
-- [K-line stream intervals][kline-stream-intervals]
 - [Relative Strength Index (RSI)][rsi]
+- [Discord Developers Platform][ddp]
+- [K-line stream intervals][kline-stream-intervals]
 - [Bybit Documentation](https://bybit-exchange.github.io/docs/v5/intro)
 - [Pybit](https://github.com/bybit-exchange/pybit?tab=readme-ov-file#about)
