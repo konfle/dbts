@@ -128,11 +128,12 @@ async def send_discord_message(rsi):
     """
     await bot.wait_until_ready()  # Ensure the bot is ready before getting the channel
     channel = bot.get_channel(CHANNEL)
-    logger.debug(f"Sending message to channel: {channel}")
     if channel:
         if rsi > 70:
+            logger.debug(f"Sending message to channel: {channel}")
             await channel.send(f"RSI is over 70 - it's SELL time! RSI value: {rsi:.2f}")
         elif rsi < 30:
+            logger.debug(f"Sending message to channel: {channel}")
             await channel.send(f"RSI is lower 30 - it's BUY time! RSI value: {rsi:.2f}")
     else:
         logger.warning("Channel not found.")
