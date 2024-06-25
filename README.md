@@ -32,7 +32,17 @@ cd dbts
 
 ### Create a .env file in the root directory of the project and add the following environment variables:
 It may be helpful to visit this [resource][real-python-discord-bot] in case of any trouble to get the Discord 
-data needed for .env file
+data needed for .env file.
+
+Variables must be set are:
+- DISCORD_TOKEN
+- DISCORD_GUILD
+- DISCORD_CHANNEL_ID
+
+Optional variables are:
+- SYMBOL (default is: SOLUSDT)
+- INTERVAL (default is: 60)
+- RSI_PERIOD (default is: 14)
 ```
 DISCORD_TOKEN=<your_discord_bot_token>  # Discord bot token required to authenticate the bot with Discord servers.
 DISCORD_GUILD=<your_discord_guild_name>  # Name of the Discord server (guild) where the bot will operate.
