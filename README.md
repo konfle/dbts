@@ -45,7 +45,7 @@ Optional variables are:
 - RSI_PERIOD (default is: 14)
 ```
 DISCORD_TOKEN=<your_discord_bot_token>  # Discord bot token required to authenticate the bot with Discord servers.
-DISCORD_GUILD=<your_discord_guild_name>  # Name of the Discord server (guild) where the bot will operate.
+DISCORD_GUILD='<your_discord_guild_name>'  # Name of the Discord server (guild) where the bot will operate.
 DISCORD_CHANNEL_ID=<your_discord_channel_id>  # ID of the Discord channel where the bot will send messages.
 SYMBOL=SOLUSDT  # Symbol for the trading pair (e.g., SOL/USDT) for market data fetching.
 INTERVAL=1  # Interval in minutes for fetching k-line data from Bybit (e.g., 1 for 1-minute intervals).
