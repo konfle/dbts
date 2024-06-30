@@ -1,5 +1,5 @@
-from discord.ext import commands
 import discord
+from discord.ext import commands
 
 # Configuration of bot intents
 intents = discord.Intents.all()
