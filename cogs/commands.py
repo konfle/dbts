@@ -8,6 +8,12 @@ from data.historical_data import closes, RSI_PERIOD
 
 test_mode = False
 
+test_status_response = discord.Embed(
+    title="Test Mode Status",
+    description=f"Test mode is currently {'enabled' if test_mode else 'disabled'}.",
+    color=discord.Color.orange()
+)
+
 # Configuration of logging
 logger = logging.getLogger(__name__)
 
@@ -25,12 +31,8 @@ class CommandCog(commands.Cog):
         """
         Toggles and displays the current test mode status.
         """
-        embed = discord.Embed(
-            title="Test Mode Status",
-            description=f"Test mode is currently {'enabled' if test_mode else 'disabled'}.",
-            color=discord.Color.orange()
-        )
-        await ctx.send(embed=embed)
+        test_status_response.description = f"Test mode is currently {'enabled' if test_mode else 'disabled'}."
+        await ctx.send(embed=test_status_response)
 
     @commands.command(name="testmode")
     async def toggle_test_mode(self, ctx, mode: bool):

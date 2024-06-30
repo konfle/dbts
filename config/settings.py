@@ -2,7 +2,6 @@ import os
 import logging
 from dotenv import load_dotenv
 
-from utils.logger_config import setup_logging
 
 # Configuration of logging
 logger = logging.getLogger(__name__)
