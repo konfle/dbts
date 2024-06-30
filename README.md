@@ -140,6 +140,7 @@ without real market data.
 - [Discord Developers Platform][ddp]
 - [K-line stream intervals][kline-stream-intervals]
 - [Bybit Documentation](https://bybit-exchange.github.io/docs/v5/intro)
+- [Discord Cogs](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html)
 - [Pybit](https://github.com/bybit-exchange/pybit?tab=readme-ov-file#about)
 
 ## License
