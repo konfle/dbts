@@ -1,5 +1,6 @@
 import ta
 import pandas as pd
+
 from config.settings import RSI_PERIOD
 
 

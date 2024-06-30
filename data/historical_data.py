@@ -4,7 +4,6 @@ from pybit.unified_trading import HTTP
 from datetime import datetime
 
 from config.settings import RSI_PERIOD, INTERVAL, SYMBOL
-from utils.logger_config import setup_logging
 
 
 # Configuration of logging

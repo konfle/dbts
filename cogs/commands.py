@@ -1,9 +1,10 @@
 import discord
 import logging
+
 from discord.ext import commands
+
 from utils.rsi_calculator import calculate_rsi
 from data.historical_data import closes, RSI_PERIOD
-from main import send_discord_message
 
 test_mode = False
 
@@ -58,7 +59,7 @@ class CommandCog(commands.Cog):
         Sends a test alert message to the Discord channel if test mode is enabled.
         """
         if test_mode:
-            await send_discord_message(rsi)
+            await self.bot.get_cog("EventCog").send_discord_message(rsi)
             embed = discord.Embed(
                 title="Test Alert Sent",
                 description=f"Test alert sent with RSI value: {rsi}",
