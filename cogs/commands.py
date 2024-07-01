@@ -7,6 +7,7 @@ from utils.rsi_calculator import calculate_rsi
 from data.historical_data import closes, RSI_PERIOD
 
 test_mode = False
+rsi = 25
 
 test_status_response = discord.Embed(
     title="Test Mode Status",
@@ -24,6 +25,18 @@ test_mode_disable_response = discord.Embed(
     title="Test Mode Updated",
     description="Test mode is now disabled.",
     color=discord.Color.red()
+)
+
+test_alert_with_test_mode_disabled = discord.Embed(
+    title="Test Alert",
+    description=f"Test mode is not enabled. Use !testmode True to enable test mode.",
+    color=discord.Color.red()
+)
+
+test_alert_with_test_mode_enabled = discord.Embed(
+    title="Test Alert Sent",
+    description=f"Test alert sent with RSI value: {rsi}",
+    color=discord.Color.green()
 )
 
 # Configuration of logging
@@ -65,20 +78,11 @@ class CommandCog(commands.Cog):
         Sends a test alert message to the Discord channel if test mode is enabled.
         """
         if test_mode:
-            await self.bot.get_cog("EventCog").send_discord_message(rsi)
-            embed = discord.Embed(
-                title="Test Alert Sent",
-                description=f"Test alert sent with RSI value: {rsi}",
-                color=discord.Color.green()
-            )
-            await ctx.send(embed=embed)
+            test_alert_with_test_mode_enabled.description = f"Test alert sent with RSI value: {rsi}"
+            embed = test_alert_with_test_mode_enabled
         else:
-            embed = discord.Embed(
-                title="Test Alert",
-                description=f"Test mode is not enabled. Use !testmode True to enable test mode.",
-                color=discord.Color.red()
-            )
-            await ctx.send(embed=embed)
+            embed = test_alert_with_test_mode_disabled
+        await ctx.send(embed=embed)
 
     @commands.command(name="rsi")
     async def show_rsi(self, ctx):
