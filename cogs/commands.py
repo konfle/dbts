@@ -14,6 +14,18 @@ test_status_response = discord.Embed(
     color=discord.Color.orange()
 )
 
+test_mode_enable_response = discord.Embed(
+    title="Test Mode Updated",
+    description="Test mode is now enabled.",
+    color=discord.Color.green()
+)
+
+test_mode_disable_response = discord.Embed(
+    title="Test Mode Updated",
+    description="Test mode is now disabled.",
+    color=discord.Color.red()
+)
+
 # Configuration of logging
 logger = logging.getLogger(__name__)
 
@@ -42,17 +54,9 @@ class CommandCog(commands.Cog):
         global test_mode
         test_mode = mode
         if test_mode:
-            embed = discord.Embed(
-                title="Test Mode Updated",
-                description="Test mode is now enabled.",
-                color=discord.Color.green()
-            )
+            embed = test_mode_enable_response
         else:
-            embed = discord.Embed(
-                title="Test Mode Updated",
-                description="Test mode is now disabled.",
-                color=discord.Color.red()
-            )
+            embed = test_mode_disable_response
         await ctx.send(embed=embed)
 
     @commands.command(name="testalert")
