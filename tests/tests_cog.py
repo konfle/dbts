@@ -2,12 +2,14 @@ import pytest
 import pytest_asyncio
 import discord.ext.test as dpytest
 from bot import create_bot
+from data.historical_data import closes
 from cogs.commands import (CommandCog,
                            test_status_response,
                            test_mode_enable_response,
                            test_mode_disable_response,
                            test_alert_with_test_mode_disabled,
-                           test_alert_with_test_mode_enabled)
+                           test_alert_with_test_mode_enabled,
+                           response_calculated_rsi)
 
 
 @pytest_asyncio.fixture
@@ -28,6 +30,26 @@ async def bot():
 async def enable_test_mode(bot):
     await dpytest.message("!testmode True")
     assert dpytest.verify().message().contains().embed(embed=test_mode_enable_response)
+
+
+@pytest_asyncio.fixture
+def closes_list():
+    # Preparation of data for the 'closes' list
+    original_closes = closes[:]
+    test_data = [136.63, 136.62, 136.66,
+                 136.6, 136.74, 136.74,
+                 136.86, 137.05, 136.81,
+                 136.68, 136.5, 136.36,
+                 136.35, 136.4, 136.63]
+
+    closes.clear()
+    closes.extend(test_data)
+
+    yield closes
+
+    # Data cleaning after the test
+    closes.clear()
+    closes.extend(original_closes)
 
 
 @pytest.mark.asyncio
@@ -70,3 +92,9 @@ async def test_alert_low_rsi_with_test_mode_enabled(bot, enable_test_mode):
 async def test_alert_high_rsi_with_test_mode_enabled(bot, enable_test_mode):
     await dpytest.message("!testalert 75")
     assert dpytest.verify().message().contains().embed(embed=test_alert_with_test_mode_enabled)
+
+
+@pytest.mark.asyncio
+async def test_rsi_calculation_with_test_mode_enabled(bot, enable_test_mode, closes_list):
+    await dpytest.message("!rsi")
+    assert dpytest.verify().message().contains().embed(embed=response_calculated_rsi)

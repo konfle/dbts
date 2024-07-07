@@ -8,6 +8,7 @@ from data.historical_data import closes, RSI_PERIOD
 
 test_mode = False
 rsi = 25
+latest_rsi = 42
 
 test_status_response = discord.Embed(
     title="Test Mode Status",
@@ -37,6 +38,12 @@ test_alert_with_test_mode_enabled = discord.Embed(
     title="Test Alert Sent",
     description=f"Test alert sent with RSI value: {rsi}",
     color=discord.Color.green()
+)
+
+response_calculated_rsi = discord.Embed(
+    title="Current RSI",
+    description=f"The current RSI is: {latest_rsi}",
+    color=discord.Color.blue()
 )
 
 # Configuration of logging
@@ -93,11 +100,8 @@ class CommandCog(commands.Cog):
             if len(closes) >= RSI_PERIOD:
                 rsi = calculate_rsi(closes)
                 latest_rsi = rsi[-1]
-                embed = discord.Embed(
-                    title="Current RSI",
-                    description=f"The current RSI is: {latest_rsi}",
-                    color=discord.Color.blue()
-                )
+                response_calculated_rsi.description = f"The current RSI is: {latest_rsi}"
+                embed = response_calculated_rsi
                 await ctx.send(embed=embed)
             else:
                 embed = discord.Embed(
