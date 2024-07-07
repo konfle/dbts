@@ -46,6 +46,12 @@ response_calculated_rsi = discord.Embed(
     color=discord.Color.blue()
 )
 
+response_calculate_rsi_failed = discord.Embed(
+    title="Current RSI",
+    description=f"Not enough data to calculate RSI. Current closes: {len(closes)}",
+    color=discord.Color.yellow()
+)
+
 # Configuration of logging
 logger = logging.getLogger(__name__)
 
@@ -104,11 +110,7 @@ class CommandCog(commands.Cog):
                 embed = response_calculated_rsi
                 await ctx.send(embed=embed)
             else:
-                embed = discord.Embed(
-                    title="Current RSI",
-                    description=f"Not enough data to calculate RSI. Current closes: {len(closes)}",
-                    color=discord.Color.yellow()
-                )
+                embed = response_calculate_rsi_failed
                 await ctx.send(embed=embed)
         else:
             embed = discord.Embed(

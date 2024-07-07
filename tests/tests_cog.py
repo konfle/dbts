@@ -9,7 +9,8 @@ from cogs.commands import (CommandCog,
                            test_mode_disable_response,
                            test_alert_with_test_mode_disabled,
                            test_alert_with_test_mode_enabled,
-                           response_calculated_rsi)
+                           response_calculated_rsi,
+                           response_calculate_rsi_failed)
 
 
 @pytest_asyncio.fixture
@@ -33,14 +34,19 @@ async def enable_test_mode(bot):
 
 
 @pytest_asyncio.fixture
-def closes_list():
-    # Preparation of data for the 'closes' list
+def closes_list(request):
+    # Preparation of data for the "closes" list
     original_closes = closes[:]
-    test_data = [136.63, 136.62, 136.66,
-                 136.6, 136.74, 136.74,
-                 136.86, 137.05, 136.81,
-                 136.68, 136.5, 136.36,
-                 136.35, 136.4, 136.63]
+
+    # Decide on the basis of the request.param argument
+    if request.param == "14":
+        test_data = [136.63, 136.62, 136.66,
+                     136.6, 136.74, 136.74,
+                     136.86, 137.05, 136.81,
+                     136.68, 136.5, 136.36,
+                     136.35, 136.4]
+    else:
+        test_data = [136.63, 136.62, 136.66]
 
     closes.clear()
     closes.extend(test_data)
@@ -94,7 +100,15 @@ async def test_alert_high_rsi_with_test_mode_enabled(bot, enable_test_mode):
     assert dpytest.verify().message().contains().embed(embed=test_alert_with_test_mode_enabled)
 
 
+@pytest.mark.parametrize("closes_list", ["14"], indirect=True)
 @pytest.mark.asyncio
 async def test_rsi_calculation_with_test_mode_enabled(bot, enable_test_mode, closes_list):
     await dpytest.message("!rsi")
     assert dpytest.verify().message().contains().embed(embed=response_calculated_rsi)
+
+
+@pytest.mark.parametrize("closes_list", ["less than 14 closes"], indirect=True)
+@pytest.mark.asyncio
+async def test_rsi_calculation_with_test_mode_enabled(bot, enable_test_mode, closes_list):
+    await dpytest.message("!rsi")
+    assert dpytest.verify().message().contains().embed(embed=response_calculate_rsi_failed)
