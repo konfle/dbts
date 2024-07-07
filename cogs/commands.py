@@ -52,6 +52,12 @@ response_calculate_rsi_failed = discord.Embed(
     color=discord.Color.yellow()
 )
 
+response_calculate_rsi_with_disabled_test_mode = discord.Embed(
+    title="Current RSI",
+    description=f"Test mode is not enabled. Use command: !testmode True to enable test mode.",
+    color=discord.Color.red()
+)
+
 # Configuration of logging
 logger = logging.getLogger(__name__)
 
@@ -113,11 +119,7 @@ class CommandCog(commands.Cog):
                 embed = response_calculate_rsi_failed
                 await ctx.send(embed=embed)
         else:
-            embed = discord.Embed(
-                title="Current RSI",
-                description=f"Test mode is not enabled. Use command: !testmode True to enable test mode.",
-                color=discord.Color.red()
-            )
+            embed = response_calculate_rsi_with_disabled_test_mode
             await ctx.send(embed=embed)
 
 

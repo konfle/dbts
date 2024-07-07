@@ -10,7 +10,8 @@ from cogs.commands import (CommandCog,
                            test_alert_with_test_mode_disabled,
                            test_alert_with_test_mode_enabled,
                            response_calculated_rsi,
-                           response_calculate_rsi_failed)
+                           response_calculate_rsi_failed,
+                           response_calculate_rsi_with_disabled_test_mode)
 
 
 @pytest_asyncio.fixture
@@ -28,9 +29,15 @@ async def bot():
 
 
 @pytest_asyncio.fixture
-async def enable_test_mode(bot):
-    await dpytest.message("!testmode True")
-    assert dpytest.verify().message().contains().embed(embed=test_mode_enable_response)
+async def enable_test_mode(bot, request):
+    if request.param:
+        is_enabled = True
+    else:
+        is_enabled = False
+    await dpytest.message(f"!testmode {is_enabled}")
+    assert dpytest.verify().message().contains().embed(
+        embed=test_mode_enable_response if is_enabled else test_mode_disable_response
+    )
 
 
 @pytest_asyncio.fixture
@@ -88,12 +95,14 @@ async def test_alert_high_rsi_with_test_mode_disabled(bot):
     assert dpytest.verify().message().contains().embed(embed=test_alert_with_test_mode_disabled)
 
 
+@pytest.mark.parametrize("enable_test_mode", [True], indirect=True)
 @pytest.mark.asyncio
 async def test_alert_low_rsi_with_test_mode_enabled(bot, enable_test_mode):
     await dpytest.message("!testalert 25")
     assert dpytest.verify().message().contains().embed(embed=test_alert_with_test_mode_enabled)
 
 
+@pytest.mark.parametrize("enable_test_mode", [True], indirect=True)
 @pytest.mark.asyncio
 async def test_alert_high_rsi_with_test_mode_enabled(bot, enable_test_mode):
     await dpytest.message("!testalert 75")
@@ -108,7 +117,15 @@ async def test_rsi_calculation_with_test_mode_enabled(bot, enable_test_mode, clo
 
 
 @pytest.mark.parametrize("closes_list", ["less than 14 closes"], indirect=True)
+@pytest.mark.parametrize("enable_test_mode", [True], indirect=True)
 @pytest.mark.asyncio
 async def test_rsi_calculation_with_test_mode_enabled(bot, enable_test_mode, closes_list):
     await dpytest.message("!rsi")
     assert dpytest.verify().message().contains().embed(embed=response_calculate_rsi_failed)
+
+
+@pytest.mark.parametrize("enable_test_mode", [False], indirect=True)
+@pytest.mark.asyncio
+async def test_rsi_calculation_with_test_mode_disabled(bot, enable_test_mode):
+    await dpytest.message("!rsi")
+    assert dpytest.verify().message().contains().embed(embed=response_calculate_rsi_with_disabled_test_mode)
