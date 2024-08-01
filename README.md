@@ -8,6 +8,7 @@
 [mcp]: https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ
 [ddp]: https://discord.com/developers/docs/intro
 [ta]: https://pypi.org/project/ta/
+[minikube]: https://minikube.sigs.k8s.io/docs/
 
 
 # DBTS - Discord Bot for RSI Alerts
@@ -103,6 +104,85 @@ pip install -r requirements.txt
 python main.py
 ```
 
+### Option 3: Kubernetes Cluster Setup
+To run this bot on the cluster (steps for local cluster setted up via [Minikube][minikube]) on your local machine, 
+follow these steps:
+
+#### Clone the repository:
+```sh
+git clone https://github.com/konfle/dbts.git
+cd dbts
+```
+
+#### Start local cluster:
+```sh
+minikube start
+```
+
+#### Create Kubernetes resources:
+This bot required three resources for running:
+- [Secret](https://kubernetes.io/docs/concepts/configuration/secret/)
+- [Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+- [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+
+Manifests for those resources are stored in directory k8s.
+
+##### Secret
+The secret manifest is the only one that required additional effort before creating while this resource storing
+confidential data. Data stored in this resource are same data as in the .env file. To the nature of this resource data
+must be base64 encoded. To achieve this you can use [this](https://www.base64encode.org/) web application.
+
+
+```yaml
+# dbts_secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dbts
+type: Opaque
+data:
+  DISCORD_TOKEN: <base64_your_discord_bot_token>
+  DISCORD_GUILD: <base64_your_discord_guild_name>
+  DISCORD_CHANNEL_ID: <base64_your_discord_channel_id>
+  SYMBOL: U09MVVNEVA==
+  INTERVAL: MQ==
+  RSI_PERIOD: MTQ=
+```
+
+Create K8s Secret
+```sh
+kubectl create -f .\k8s\dbts_secret.yaml
+```
+
+Create K8s Deployment
+```sh
+kubectl create -f .\k8s\dbts_deployment.yaml
+```
+
+Create K8s Service
+```sh
+kubectl create -f .\k8s\dbts_service.yaml
+```
+
+##### Check that all resources are up and running:
+```sh
+kubectl get service,deployment,secret,pod
+```
+
+Example output from command above:
+```sh
+NAME                       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/dbts-service       NodePort    10.98.204.227   <none>        80:30001/TCP   4d
+
+NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/dbts-deployment   1/1     1            1           4d
+
+NAME                          TYPE     DATA   AGE
+secret/dbts                   Opaque   6      4d
+
+NAME                                   READY   STATUS    RESTARTS      AGE
+pod/dbts-deployment-56b868767b-fwc87   1/1     Running   2 (30m ago)   4d
+```
 ## Usage
 The bot connects to the specified Discord server and channel. It fetches configured symbol (SOL/USDT by default) k-line 
 data from [Bybit][bybit] and calculates the [RSI][rsi]. If the [RSI][rsi] is above 70 or below 30, it sends a message to
@@ -141,6 +221,7 @@ without real market data.
 - [K-line stream intervals][kline-stream-intervals]
 - [Bybit Documentation](https://bybit-exchange.github.io/docs/v5/intro)
 - [Discord Cogs](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html)
+- [Minikube][minikube]
 - [Pybit](https://github.com/bybit-exchange/pybit?tab=readme-ov-file#about)
 
 ## License
