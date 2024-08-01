@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbts-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dbts
+  template:
+    metadata:
+      labels:
+        app: dbts
+    spec:
+      containers:
+      - name: dbts-main
+        image: dbts:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DISCORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: dbts
+              key: DISCORD_TOKEN
+        - name: DISCORD_GUILD
+          valueFrom:
+            secretKeyRef:
+              name: dbts
+              key: DISCORD_GUILD
+        - name: DISCORD_CHANNEL_ID
+          valueFrom:
+            secretKeyRef:
+              name: dbts
+              key: DISCORD_CHANNEL_ID
+        - name: SYMBOL
+          valueFrom:
+            secretKeyRef:
+              name: dbts
+              key: SYMBOL
+        - name: INTERVAL
+          valueFrom:
+            secretKeyRef:
+              name: dbts
+              key: INTERVAL
+        - name: RSI_PERIOD
+          valueFrom:
+            secretKeyRef:
+              name: dbts
+              key: RSI_PERIOD
