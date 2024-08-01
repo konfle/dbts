@@ -114,9 +114,20 @@ git clone https://github.com/konfle/dbts.git
 cd dbts
 ```
 
+#### Build Docker image:
+This setup ([bot deployment](k8s/dbts_deployment.yaml)) required Docker image to run this bot to create such image use command below.
+```sh
+docker build -t my-discord-bot:latest .
+```
+
 #### Start local cluster:
 ```sh
 minikube start
+```
+
+#### Load bot Docker image to the Minikube cluster:
+```sh
+minikube image load my-discord-bot:latest
 ```
 
 #### Create Kubernetes resources:
