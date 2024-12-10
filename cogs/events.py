@@ -22,7 +22,10 @@ class EventCog(commands.Cog):
         Event handler that is called when the bot has successfully connected to Discord.
         """
         guild = discord.utils.get(self.bot.guilds, name=GUILD)
-        logger.info(f"{self.bot.user.name} has connected to Discord {guild.name}!")
+        if guild:
+            logger.info(f"{self.bot.user.name} has connected to Discord {guild.name}!")
+        else:
+            logger.warning(f"Could not find a guild with ID {GUILD}.")
 
     async def send_discord_message(self, rsi):
         """
