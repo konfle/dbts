@@ -22,3 +22,7 @@ if TOKEN is None or GUILD is None or CHANNEL is None:
 SYMBOL = os.getenv("SYMBOL", "SOLUSDT")
 INTERVAL = int(os.getenv("INTERVAL", 60))  # It's counted in minutes
 RSI_PERIOD = int(os.getenv("RSI_PERIOD", 14))
+
+# Set default values for signals
+SELL_SIGNAL = int(os.getenv("SELL_SIGNAL_VALUE", 70))
+BUY_SIGNAL = int(os.getenv("BUY_SIGNAL_VALUE", 30))

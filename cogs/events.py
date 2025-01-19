@@ -4,7 +4,7 @@ import numpy as np
 
 from discord.ext import commands
 
-from config.settings import GUILD, CHANNEL, RSI_PERIOD
+from config.settings import GUILD, CHANNEL, RSI_PERIOD, SELL_SIGNAL, BUY_SIGNAL
 from data.historical_data import closes
 from utils.rsi_calculator import calculate_rsi
 
@@ -39,17 +39,17 @@ class EventCog(commands.Cog):
 
         This function waits until the Discord bot is ready before attempting to fetch the
         channel by its ID from the environment variables. It then sends a message to the
-        channel indicating whether the RSI is considered high (over 70, indicating it's
-        time to sell) or low (under 30, indicating it's time to buy).
+        channel indicating whether the RSI is considered high (over configurable value, indicating it's
+        time to sell) or low (under configurable value, indicating it's time to buy).
         """
         channel = self.bot.get_channel(CHANNEL)
         if channel:
-            if rsi > 70:
+            if rsi > SELL_SIGNAL:
                 logger.debug(f"Sending message to channel: {channel}")
-                await channel.send(f"RSI is over 70 - it's SELL time! RSI value: {rsi:.2f}")
-            elif rsi < 30:
+                await channel.send(f"RSI is over {SELL_SIGNAL} - it's SELL time! RSI value: {rsi:.2f}")
+            elif rsi < BUY_SIGNAL:
                 logger.debug(f"Sending message to channel: {channel}")
-                await channel.send(f"RSI is lower 30 - it's BUY time! RSI value: {rsi:.2f}")
+                await channel.send(f"RSI is lower {BUY_SIGNAL} - it's BUY time! RSI value: {rsi:.2f}")
         else:
             logger.warning("Channel not found.")
 
